@@ -15,7 +15,7 @@ use pocketmine\command\{
 };
 
 use pocketmine\event\player\{
-    PlayerLoginEvent, PlayerJoinEvent, PlayerQuitEvent, PlayerDeathEvent, PlayerInteractEvent, PlayerMoveEvent
+    PlayerLoginEvent, PlayerJoinEvent, PlayerQuitEvent, PlayerDeathEvent, PlayerInteractEvent, PlayerMoveEvent, PlayerCommandPreprocessEvent
 };
 
 use pocketmine\event\Listener;
@@ -94,6 +94,29 @@ class LoginSecurity extends PluginBase implements Listener {
                 }
             } else {
                 $event->setCancelled();
+            }
+        }
+    }
+
+    /**
+     * @param PlayerCommandPreprocessEvent $event
+     */
+    public function cancelCommand(PlayerCommandPreprocessEvent $event){
+        $msg = $event->getMessage();
+        $cmd = explode(" ", strtolower($event->getMessage()));
+        $player = $event->getPlayer();
+        $data = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
+        if($data->exists("password")){
+            if($data->get("login") == "null"){
+                if($cmd[0] != "/login"){
+                    $event->setCancelled(true);
+                    $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("please.login"));
+                }
+            }
+        } else {
+            if($cmd[0] != "/register"){
+                $event->setCancelled(true);
+                $player->sendMessage(self::MSG_REGISTER.$this->getConfig()->get("unregistered.register"));
             }
         }
     }
