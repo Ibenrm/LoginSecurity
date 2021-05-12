@@ -11,3 +11,4 @@ Plugins LoginSecurity Support Pocketmine-mp
 - /register (password) (repeat-password)
 - /changepass (old-password) (new-password) || Changes your passwords
 - /rmpass (name-player) || Remove target passwords
+- /mypass || Get Your passwords
