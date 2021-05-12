@@ -2,9 +2,6 @@
 
 namespace LoginSecurity\Ibenrm01;
 
-//bugs chat login
-//bugs change password
-
 use pocketmine\{
     Server, Player
 };
