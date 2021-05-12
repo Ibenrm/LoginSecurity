@@ -5,6 +5,7 @@ Plugins LoginSecurity Support Pocketmine-mp
 - You cannot move if you are not logged in || FREZEE
 - There is a delay when the password changes || COOLDOWN
 - There is a delay when the password remove || COOLDOWN
+- You cannot use command if you are not logged in or register || CANCEL COMMANDS
 
 # Commands
 - /login (password)
