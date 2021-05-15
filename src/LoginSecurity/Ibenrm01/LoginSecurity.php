@@ -194,7 +194,7 @@ class LoginSecurity extends PluginBase implements Listener {
             $data->remove("login");
             $data->save();
             $player->sendMessage(self::MSG_REMOVE_PASSWORD."§aYour Password Delete, §dPlease /register (password) (repeat-password)");
-            $this->timer_remove_password[$player->getName()] = time() + 300; //per seconds
+            $this->timer_remove_password[$player->getName()] = time() + $this->getConfig()->get("remove.pass.cooldown"); //per seconds
         } else {
             $player->sendMessage(self::MSG_REMOVE_PASSWORD.$this->getConfig()->get("unregistered.register"));
         }
@@ -213,7 +213,7 @@ class LoginSecurity extends PluginBase implements Listener {
                     $data->set("password", $newpw);
                     $data->save();
                     $player->sendMessage(self::MSG_CHANGE_PASSWORD.$this->getConfig()->get("success.changepass"));
-                    $this->timer_change_password[$player->getName()] = time() + 1200; //per seconds
+                    $this->timer_change_password[$player->getName()] = time() + $this->getConfig()->get("change.pass.cooldown"); //per seconds
                 } else {
                     $player->sendMessage(self::MSG_CHANGE_PASSWORD.$this->getConfig()->get("can't-same.changepass"));
                 }
@@ -257,12 +257,17 @@ class LoginSecurity extends PluginBase implements Listener {
                             if($data->get("password") != null){
                                 if($args[0] == $data->getNested("password")){
                                     if($data->exists("login")){
-                                        $data->set("login", "success");
-                                        $data->save();
-                                        $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("success.login"));
-                                        return true;
+                                        if($data->get("login") == "null"){
+                                            $data->set("login", "success");
+                                            $data->save();
+                                            $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("success.login"));
+                                            return true;
+                                        } else {
+                                            $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("already.login"));
+                                            return true;
+                                        }
                                     } else {
-                                        $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("already.login"));
+                                        $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("please.register.login"));
                                         return true;
                                     }
                                 } else {
