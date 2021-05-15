@@ -19,4 +19,8 @@ success.register: "§aSuccess registered, §dWelcome to server!"
 # MESSAGE: CHANGE PASSWORD
 success.changepass: "§aSuccess change passwords!"
 can't-same.changepass: "§cPlease repeat §dCHANGE PASSWORD §cyou old password must be the same"
+
+# COOLDOWN: REMOVE PASS AND CHANGE PASS | per seconds
+remove.pass.cooldown: 120
+change.pass.cooldown: 500
 ...
