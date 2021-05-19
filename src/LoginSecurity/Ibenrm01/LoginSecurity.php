@@ -350,7 +350,7 @@ class LoginSecurity extends PluginBase implements Listener {
                             return true;
                         } else {
                             if(time() < $this->timer_remove_password[$player->getName()]){
-                                $cooldown = $this->timer_remove_password[$player->getName()];
+                                $cooldown = $this->timer_remove_password[$player->getName()] - time();
                                 $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cCooldown for use this command again: §d".$cooldown." §aSeconds");
                                 return true;
                             } else {
