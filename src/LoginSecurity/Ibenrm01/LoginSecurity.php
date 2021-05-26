@@ -115,9 +115,9 @@ class LoginSecurity extends PluginBase implements Listener {
         $data = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
         if($data->exists("password") && $data->exists("forgot-password")){
             if($data->get("login") == "null"){
-                if($cmd[0] != "/login"){
+                if($cmd[0] == "/login"){
+                } elseif($cmd[0] != "/forgotpass"){
                     $event->setCancelled(true);
-                    $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("please.login"));
                 }
             }
         } else {
@@ -127,7 +127,7 @@ class LoginSecurity extends PluginBase implements Listener {
                     $player->sendMessage(self::MSG_REGISTER.$this->getConfig()->get("unregistered.register"));
                 }
             } elseif($data->exists("forgot-password")){
-                if($cmd[0] != "/forgot"){
+                if($cmd[0] != "/forgotpass"){
                     $event->setCancelled(true);
                     $player->sendMessage(self::MSG_RECOVERY_PASSWORD.$this->getConfig()->get("please-forgot.password"));
                 }
@@ -311,7 +311,11 @@ class LoginSecurity extends PluginBase implements Listener {
                         $player->sendMessage(self::MSG_FORGOT_PASSWORD."§cYou can't get password, §dPlease repeat /forgotpass");
                     }
                     if($data[6] == true){
-                        $this->onAcceptRm($player);
+                        if($dt->get("login") == "success"){
+                            $this->onAcceptRm($player);
+                        } else {
+                            $player->sendMessage(self::MSG_FORGOT_PASSWORD."§cYou Can't remove, please /login and you can remove");
+                        }
                     }
                 }
             });
@@ -341,7 +345,7 @@ class LoginSecurity extends PluginBase implements Listener {
             if($data == 1){
                 $dt->removeNested("forgot-password");
                 $dt->save();
-                $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aSuccess Remove Forget Password, §bPlease /forgetpass for create new");
+                $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aSuccess Remove Forget Password, §bPlease /forgotpass for create new");
             }
         });
         $form->setTitle("§l§eREMOVE FORGOT PASSWORD");
