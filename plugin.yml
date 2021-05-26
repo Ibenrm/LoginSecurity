@@ -1,6 +1,6 @@
 name: LoginSecurity
 main: LoginSecurity\Ibenrm01\LoginSecurity
-version: 1.0
+version: 1.3
 api: 3.9.5
 author: Ibenrm01
 
@@ -15,3 +15,5 @@ commands:
     description: Register Commands
   mypass:
     description: Check My Password
+  forgotpass:
+    description: Forgot Your Password ?

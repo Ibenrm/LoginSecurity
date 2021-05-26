@@ -36,6 +36,7 @@ class LoginSecurity extends PluginBase implements Listener {
     const MSG_CHANGE_PASSWORD = "§l§eCHANGE PASSWORD §7// §r";
     const MSG_REMOVE_PASSWORD = "§l§eREMOVE PASSWORD §7// §r";
     const MSG_MY_PASSWORD = "§l§ePASSWORD §7// §r";
+    const MSG_FORGOT_PASSWORD = "§l§eFORGOT PASSWORD §7// §r";
 
     public $timer_change_password = [];
     public $timer_remove_password = [];
@@ -57,6 +58,8 @@ class LoginSecurity extends PluginBase implements Listener {
             if($data->exists("login")){
                 if($data->get("login") == "null"){
                     $event->setCancelled();
+                } elseif(!$data->exists("forgot-password")){
+                    $event->setCancelled();
                 }
             } else {
                 $event->setCancelled();
@@ -73,6 +76,8 @@ class LoginSecurity extends PluginBase implements Listener {
             $data = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
             if($data->exists("login")){
                 if($data->get("login") == "null"){
+                    $event->setCancelled();
+                } elseif(!$data->exists("forgot-password")){
                     $event->setCancelled();
                 }
             } else {
@@ -91,6 +96,8 @@ class LoginSecurity extends PluginBase implements Listener {
             if($data->exists("login")){
                 if($data->get("login") == "null"){
                     $event->setCancelled();
+                } elseif(!$data->exists("forgot-password")){
+                    $event->setCancelled();
                 }
             } else {
                 $event->setCancelled();
@@ -106,7 +113,7 @@ class LoginSecurity extends PluginBase implements Listener {
         $cmd = explode(" ", strtolower($event->getMessage()));
         $player = $event->getPlayer();
         $data = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
-        if($data->exists("password")){
+        if($data->exists("password") && $data->exists("forgot-password")){
             if($data->get("login") == "null"){
                 if($cmd[0] != "/login"){
                     $event->setCancelled(true);
@@ -114,9 +121,16 @@ class LoginSecurity extends PluginBase implements Listener {
                 }
             }
         } else {
-            if($cmd[0] != "/register"){
-                $event->setCancelled(true);
-                $player->sendMessage(self::MSG_REGISTER.$this->getConfig()->get("unregistered.register"));
+            if(!$data->exists("password")){
+                if($cmd[0] != "/register"){
+                    $event->setCancelled(true);
+                    $player->sendMessage(self::MSG_REGISTER.$this->getConfig()->get("unregistered.register"));
+                }
+            } elseif($data->exists("forgot-password")){
+                if($cmd[0] != "/forgot"){
+                    $event->setCancelled(true);
+                    $player->sendMessage(self::MSG_RECOVERY_PASSWORD.$this->getConfig()->get("please-forgot.password"));
+                }
             }
         }
     }
@@ -156,15 +170,20 @@ class LoginSecurity extends PluginBase implements Listener {
     public function onMove(PlayerMoveEvent $event){
         $player = $event->getPlayer();
         $data = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
-        if($data->exists("password")){
+        if($data->exists("password") && $data->exists("forgot-password")){
             if($data->get("login") == "null"){
                 $player->setImmobile(true);
             } elseif($data->get("login") == "success"){
                 $player->setImmobile(false);
             }
         } else {
-            $player->setImmobile(true);
-            $player->sendPopup($this->getConfig()->get("unregistered.register"));
+            if(!$data->exists("password")){
+                $player->setImmobile(true);
+                $player->sendPopup($this->getConfig()->get("unregistered.register"));
+            } elseif(!$data->exists("forgot-password")){
+                $player->setImmobile(true);
+                $player->sendPopup($this->getConfig()->get("please-forgot.password"));
+            }
         }
     }
 
@@ -228,6 +247,108 @@ class LoginSecurity extends PluginBase implements Listener {
                 unset($this->timer_change_password[$player->getName()]);
             }
         }
+    }
+
+    /**
+     * @param Player $player
+     */
+    public function onForgot(Player $player){
+        $dt = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
+        if(!$dt->exists("forgot-password")){
+            $api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
+            $form = $api->createCustomForm(function (Player $player, array $data = null) use ($dt) {
+                if($data === null){
+                    if(!$dt->exists("forgot-password")){
+                        $this->onForgot($player);
+                    } else {
+                        $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aThanks for open forgot password menu");
+                    }
+                    return;
+                } else {
+                    if($data[1] != null && $data[2] != null && $data[3] != null && $data[4] != null && $data[5] != null && $data[6] != null){
+                        $dt->setNested("forgot-password.first-question", $data[1].":".$data[2]);
+                        $dt->setNested("forgot-password.second-question", $data[3].":".$data[4]);
+                        $dt->setNested("forgot-password.last-question", $data[5].":".$data[6]);
+                        $dt->save();
+                        $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aSuccess create forgot password
+                        \n§dFIRST QUESTION: §c".$data[1]."\n§dFIRST ANSWER: §c".$data[2].
+                        "\n§dSECOND QUESTION: §c".$data[3]."\n§dSECOND ANSWER: §c".$data[4].
+                        "\n§dLAST QUESTION: §c".$data[5]."\n§dLAST ANSWER: §c".$data[6]);
+                    } else {
+                        $this->onForgot($player);
+                        $player->sendMessage(self::MSG_FORGOT_PASSWORD."§cPlease Enter a question and answer for create forgot password");
+                    }
+                }
+            });
+            $form->setTitle("§l§eFORGOT PASSWORD");
+            $form->addLabel("§bPLEASE ENTER A QUESTION AND ANSWER FOR CREATE FORGOT PASSWORD");
+            $form->addInput("", "Enter a first question");
+            $form->addInput("", "Enter a answer first question");
+            $form->addInput("", "Enter a second question");
+            $form->addInput("", "Enter a answer second question");
+            $form->addInput("", "Enter a last question");
+            $form->addInput("", "Enter a answer last question");
+            $form->sendToPlayer($player);
+        } else {
+            $vls_first = explode(":", $dt->getNested("forgot-password.first-question"));
+            $vls_second = explode(":", $dt->getNested("forgot-password.second-question"));
+            $vls_last = explode(":", $dt->getNested("forgot-password.last-question"));
+            $api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
+            $form = $api->createCustomForm(function (Player $player, array $data = null) use ($dt, $vls_first, $vls_second, $vls_last) {
+                if($data === null){
+                    $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aThanks for open recover password menu");
+                    return;
+                } else {
+                    if($data[1] != null && $data[3] != null && $data[5] != null){
+                        if($data[1] == $vls_first[1] && $data[3] == $vls_second[1] && $data[5] == $vls_last[1]){
+                            $msg = $this->getConfig()->get("success-forgot.password");
+                            $msg = str_replace("{password}", $dt->get("password"), $msg);
+                            $player->sendMessage(self::MSG_FORGOT_PASSWORD.$msg);
+                        } else {
+                            $player->sendMessage(self::MSG_FORGOT_PASSWORD.$this->getConfig()->get("wrong.answer"));
+                        }
+                    } else {
+                        $player->sendMessage(self::MSG_FORGOT_PASSWORD."§cYou can't get password, §dPlease repeat /forgotpass");
+                    }
+                    if($data[6] == true){
+                        $this->onAcceptRm($player);
+                    }
+                }
+            });
+            $form->setTitle("§l§eFORGOT PASSWORD");
+            $form->addLabel($vls_first[0]);
+            $form->addInput("", "Enter a first answer");
+            $form->addLabel($vls_second[0]);
+            $form->addInput("", "Enter a second answer");
+            $form->addLabel($vls_last[0]);
+            $form->addInput("", "Enter a last answer");
+            $form->addToggle("§dRemove Forgot Password", false);
+            $form->sendToPlayer($player);
+        }
+    }
+
+    /**
+     * @param Player $player
+     */
+    public function onAcceptRm(Player $player){
+        $dt = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
+        $api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
+        $form = $api->createModalForm(function (Player $player, $data) use ($dt) {
+            if($data === null){
+                $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aThanks for open Forgot Password UI");
+                return;
+            }
+            if($data == 1){
+                $dt->removeNested("forgot-password");
+                $dt->save();
+                $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aSuccess Remove Forget Password, §bPlease /forgetpass for create new");
+            }
+        });
+        $form->setTitle("§l§eREMOVE FORGOT PASSWORD");
+        $form->setContent("§bdo you really want to delete ?");
+        $form->setButton1("§aACCEPT", 1);
+        $form->setButton2("§cCANCEL", 2);
+        $form->sendToPlayer($player);
     }
 
     /**
@@ -379,6 +500,15 @@ class LoginSecurity extends PluginBase implements Listener {
                 $player->sendMessage(self::MSG_MY_PASSWORD."§cPlease Use This Command in-game");
                 return true;
             }
+            break;
+            case "forgotpass":
+                if($player instanceof Player){
+                    $this->onForgot($player);
+                    return true;
+                } else {
+                    $player->sendMessage(self::MSG_FORGOT_PASSWORD."§cPlease Use This Command In-Game");
+                    return true;
+                }
             break;
         }
         return true;

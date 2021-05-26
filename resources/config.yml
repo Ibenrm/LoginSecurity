@@ -20,6 +20,12 @@ success.register: "§aSuccess registered, §dWelcome to server!"
 success.changepass: "§aSuccess change passwords!"
 can't-same.changepass: "§cPlease repeat §dCHANGE PASSWORD §cyou old password must be the same"
 
+# MESSAGE: FORGOT PASSWORD
+please-forgot.password: "§bplease /forgotpass"
+#success-recovery.password = {password} = send your password
+success-forgot.password: "§aSuccess Quest Forgot password, Your password: §d{password}"
+wrong.answer: "§cAnswer there is wrong"
+
 # COOLDOWN: REMOVE PASS AND CHANGE PASS | per seconds
 remove.pass.cooldown: 120
 change.pass.cooldown: 500
