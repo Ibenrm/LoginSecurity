@@ -31,12 +31,12 @@ use pocketmine\event\block\{
 
 class LoginSecurity extends PluginBase implements Listener {
 
-    const MSG_LOGIN = "§l§eLOGIN §7// §r";
-    const MSG_REGISTER = "§l§eREGISTER §7// §r";
-    const MSG_CHANGE_PASSWORD = "§l§eCHANGE PASSWORD §7// §r";
-    const MSG_REMOVE_PASSWORD = "§l§eREMOVE PASSWORD §7// §r";
-    const MSG_MY_PASSWORD = "§l§ePASSWORD §7// §r";
-    const MSG_FORGOT_PASSWORD = "§l§eFORGOT PASSWORD §7// §r";
+    const MSG_LOGIN = "§l§eBIENVENIDO §7// §r";
+    const MSG_REGISTER = "§l§eREGISTRADO §7// §r";
+    const MSG_CHANGE_PASSWORD = "§l§eCAMBIAR TU CONTRASEÑA §7// §r";
+    const MSG_REMOVE_PASSWORD = "§l§eQUITASTE TU CONSTRASEÑA §7// §r";
+    const MSG_MY_PASSWORD = "§l§eCONTRASEÑA §7// §r";
+    const MSG_FORGOT_PASSWORD = "§l§eOLVIDASTE TU CONTRASEÑA §7// §r";
 
     public $timer_change_password = [];
     public $timer_remove_password = [];
@@ -280,14 +280,14 @@ class LoginSecurity extends PluginBase implements Listener {
                     }
                 }
             });
-            $form->setTitle("§l§eFORGOT PASSWORD");
-            $form->addLabel("§bPLEASE ENTER A QUESTION AND ANSWER FOR CREATE FORGOT PASSWORD");
-            $form->addInput("", "Enter a first question");
-            $form->addInput("", "Enter a answer first question");
-            $form->addInput("", "Enter a second question");
-            $form->addInput("", "Enter a answer second question");
-            $form->addInput("", "Enter a last question");
-            $form->addInput("", "Enter a answer last question");
+            $form->setTitle("§l§eBYPAPS LOGIN");
+            $form->addLabel("§bPORFAVOR COLOCA ALGUNAS PREGUNTAS Y RESPUESTAS POR SI OLVIDAS TU CONTRASEÑA");
+            $form->addInput("", "Coloca Tu Primera Pregunta");
+            $form->addInput("", "Respueta");
+            $form->addInput("", "Coloca Tu Segunda Pregunta");
+            $form->addInput("", "Respuesta");
+            $form->addInput("", "Coloca Tu Ultima Pregunta");
+            $form->addInput("", "Respuesta");
             $form->sendToPlayer($player);
         } else {
             $vls_first = explode(":", $dt->getNested("forgot-password.first-question"));
