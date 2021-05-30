@@ -415,7 +415,6 @@ class LoginSecurity extends PluginBase implements Listener {
                 $player->sendMessage(self::MSG_LOGIN."§cPlease Use This Command in game");
                 return true;
             }
-            break;
             case "register":
             if($player instanceof Player){
                 if(isset($args[0]) && isset($args[1])){
@@ -439,7 +438,6 @@ class LoginSecurity extends PluginBase implements Listener {
                 $player->sendMessage(self::MSG_REGISTER."§cUse This Command in-game");
                 return true;
             }
-            break;
             case "changepass":
             if($player instanceof Player){
                 if(isset($args[0]) && isset($args[1])){
@@ -463,7 +461,6 @@ class LoginSecurity extends PluginBase implements Listener {
                 $player->sendMessage(self::MSG_CHANGE_PASSWORD."§cPlease use this command in-game");
                 return true;
             }
-            break;
             case "rmpass":
             if($player->isOp()){
                 if(isset($args[0])){
@@ -495,7 +492,6 @@ class LoginSecurity extends PluginBase implements Listener {
                 $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cYou don't have permission");
                 return true;
             }
-            break;
             case "mypass":
             if($player instanceof Player){
                 $this->onMypass($player);
@@ -504,7 +500,6 @@ class LoginSecurity extends PluginBase implements Listener {
                 $player->sendMessage(self::MSG_MY_PASSWORD."§cPlease Use This Command in-game");
                 return true;
             }
-            break;
             case "forgotpass":
                 if($player instanceof Player){
                     $this->onForgot($player);
