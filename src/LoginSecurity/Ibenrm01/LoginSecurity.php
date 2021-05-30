@@ -129,7 +129,7 @@ class LoginSecurity extends PluginBase implements Listener {
             } elseif($data->exists("forgot-password")){
                 if($cmd[0] != "/forgotpass"){
                     $event->setCancelled(true);
-                    $player->sendMessage(self::MSG_RECOVERY_PASSWORD.$this->getConfig()->get("please-forgot.password"));
+                    $player->sendMessage(self::MSG_FORGOT_PASSWORD.$this->getConfig()->get("please-forgot.password"));
                 }
             }
         }
@@ -296,7 +296,7 @@ class LoginSecurity extends PluginBase implements Listener {
             $api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
             $form = $api->createCustomForm(function (Player $player, array $data = null) use ($dt, $vls_first, $vls_second, $vls_last) {
                 if($data === null){
-                    $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aThanks for open recover password menu");
+                    $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aGracias Por Utilizar El Menu De Recuperacion De Contraseñas");
                     return;
                 } else {
                     if($data[1] != null && $data[3] != null && $data[5] != null){
@@ -319,14 +319,14 @@ class LoginSecurity extends PluginBase implements Listener {
                     }
                 }
             });
-            $form->setTitle("§l§eFORGOT PASSWORD");
+            $form->setTitle("§l§eBYPAPS OLVIDAR CONTRASEÑA");
             $form->addLabel($vls_first[0]);
-            $form->addInput("", "Enter a first answer");
+            $form->addInput("", "Coloca La Primera Respuesta");
             $form->addLabel($vls_second[0]);
-            $form->addInput("", "Enter a second answer");
+            $form->addInput("", "Coloca La Segunda Respuesta");
             $form->addLabel($vls_last[0]);
-            $form->addInput("", "Enter a last answer");
-            $form->addToggle("§dRemove Forgot Password", false);
+            $form->addInput("", "Coloca La Ultima Respuesta");
+            $form->addToggle("§dQuitaste la Recuperacion de Contraseña", false);
             $form->sendToPlayer($player);
         }
     }
@@ -348,10 +348,10 @@ class LoginSecurity extends PluginBase implements Listener {
                 $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aSuccess Remove Forget Password, §bPlease /forgotpass for create new");
             }
         });
-        $form->setTitle("§l§eREMOVE FORGOT PASSWORD");
-        $form->setContent("§bdo you really want to delete ?");
-        $form->setButton1("§aACCEPT", 1);
-        $form->setButton2("§cCANCEL", 2);
+        $form->setTitle("§l§eQUITAR RECORDAR CONTRASEÑA");
+        $form->setContent("§bEstas Seguro de Eliminarla?");
+        $form->setButton1("§aACEPTAR", 1);
+        $form->setButton2("§cCANCELAR", 2);
         $form->sendToPlayer($player);
     }
 
