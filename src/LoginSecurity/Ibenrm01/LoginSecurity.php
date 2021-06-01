@@ -345,7 +345,7 @@ class LoginSecurity extends PluginBase implements Listener {
             if($data == 1){
                 $dt->removeNested("forgot-password");
                 $dt->save();
-                $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aSuccess Remove Forget Password, §bPlease /forgotpass for create new");
+                $player->sendMessage(self::MSG_FORGOT_PASSWORD."§aSuccess Remove Forget Password, §bPlease /forgetpass for create new");
             }
         });
         $form->setTitle("§l§eREMOVE FORGOT PASSWORD");
@@ -465,34 +465,39 @@ class LoginSecurity extends PluginBase implements Listener {
             }
             break;
             case "rmpass":
-            if($player->isOp()){
-                if(isset($args[0])){
-                    $target = $this->getServer()->getPlayer($args[0]);
-                    if($target instanceof Player){
-                        if(!isset($this->timer_remove_password[$player->getName()])){
-                            $this->onRemovepass($target);
-                            $player->sendMessage(self::MSG_REMOVE_PASSWORD."§aSuccess remove password §d".$target->getName());
-                            return true;
-                        } else {
-                            if(time() < $this->timer_remove_password[$player->getName()]){
-                                $cooldown = $this->timer_remove_password[$player->getName()] - time();
-                                $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cCooldown for use this command again: §d".$cooldown." §aSeconds");
+            if($player instanceof Player){
+                if($player->isOp()){
+                    if(isset($args[0])){
+                        $target = $this->getServer()->getPlayer($args[0]);
+                        if($target instanceof Player){
+                            if(!isset($this->timer_remove_password[$player->getName()])){
+                                $this->onRemovepass($target);
+                                $player->sendMessage(self::MSG_REMOVE_PASSWORD."§aSuccess remove password §d".$target->getName());
                                 return true;
                             } else {
-                                unset($this->timer_remove_password[$player->getName()]);
-                                return true;
+                                if(time() < $this->timer_remove_password[$player->getName()]){
+                                    $cooldown = $this->timer_remove_password[$player->getName()] - time();
+                                    $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cCooldown for use this command again: §d".$cooldown." §aSeconds");
+                                    return true;
+                                } else {
+                                    unset($this->timer_remove_password[$player->getName()]);
+                                    return true;
+                                }
                             }
+                        } else {
+                            $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cPlayer §d".$args[0]."§c not found");
+                            return true;
                         }
                     } else {
-                        $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cPlayer §d".$args[0]."§c not found");
+                        $player->sendMessage(self::MSG_REMOVE_PASSWORD."§b/rmpass (name-player)");
                         return true;
                     }
                 } else {
-                    $player->sendMessage(self::MSG_REMOVE_PASSWORD."§b/rmpass (name-player)");
+                    $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cYou don't have permission");
                     return true;
                 }
             } else {
-                $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cYou don't have permission");
+                $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cPlease Use This Command in-game");
                 return true;
             }
             break;

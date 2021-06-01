@@ -1,6 +1,6 @@
 name: LoginSecurity
 main: LoginSecurity\Ibenrm01\LoginSecurity
-version: 1.3
+version: 1.4
 api: 3.9.5
 author: Ibenrm01
 

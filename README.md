@@ -6,6 +6,7 @@ Plugins LoginSecurity Support Pocketmine-mp
 - There is a delay when the password changes || COOLDOWN
 - There is a delay when the password remove || COOLDOWN
 - You cannot use command if you are not logged in or register or forgot password || CANCEL COMMANDS
+- Command cannot use in a console and slapper || CANCEL COMMANDS
 
 # Commands
 - /login (password)
