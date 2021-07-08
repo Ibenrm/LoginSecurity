@@ -372,11 +372,19 @@ class LoginSecurity extends PluginBase implements Listener {
         }
     }
 
+    /**
+     * @param CommandSender $sender
+     * @param Command $cmd
+     * @param string $label
+     * @param array $args
+     * 
+     * @return bool
+     */
     public function onCommand(CommandSender $player, Command $cmd, string $label, array $args) :bool {
         switch($cmd->getName()){
             case "login":
-            if($player instanceof Player){
-                if(isset($args[0])){
+                if($player instanceof Player){
+                    if(isset($args[0])){
                         $data = new Config($this->getDataFolder()."/players/".$player->getName().".yml", Config::YAML);
                         if($data->exists("password")){
                             if($data->get("password") != null){
@@ -407,108 +415,108 @@ class LoginSecurity extends PluginBase implements Listener {
                             $player->sendMessage(self::MSG_LOGIN.$this->getConfig()->get("please.register.login"));
                             return true;
                         }
+                    } else {
+                        $player->sendMessage(self::MSG_LOGIN."§b/login (password)");
+                        return true;
+                    }
                 } else {
-                    $player->sendMessage(self::MSG_LOGIN."§b/login (password)");
+                    $player->sendMessage(self::MSG_LOGIN."§cPlease Use This Command in game");
                     return true;
                 }
-            } else {
-                $player->sendMessage(self::MSG_LOGIN."§cPlease Use This Command in game");
-                return true;
-            }
             break;
             case "register":
-            if($player instanceof Player){
-                if(isset($args[0]) && isset($args[1])){
-                    if(!isset($args[2])){
-                        if($args[1] == $args[0]){
-                            $this->onRegister($player, $args[0], $args[1]);
-                            return true;
-                        } else {
-                            $player->sendMessage(self::MSG_REGISTER."§cPassword must be the same");
-                            return true;
-                        }
-                    } else {
-                        $player->sendMessage(self::MSG_REGISTER."§cPassword cannot contain spaces");
-                        return true;
-                    }
-                } else {
-                    $player->sendMessage(self::MSG_REGISTER."§b/register (password) (repeat-password)");
-                    return true;
-                }
-            } else {
-                $player->sendMessage(self::MSG_REGISTER."§cUse This Command in-game");
-                return true;
-            }
-            break;
-            case "changepass":
-            if($player instanceof Player){
-                if(isset($args[0]) && isset($args[1])){
-                    if(!isset($args[2])){
-                        if($args[1] != $args[0]){
-                            $this->onChangepass($player, $args[0], $args[1]);
-                            return true;
-                        } else {
-                            $player->sendMessage(self::MSG_CHANGE_PASSWORD."§cYou password don't can same, §drepeat again");
-                            return true;
-                        }
-                    } else {
-                        $player->sendMessage(self::MSG_CHANGE_PASSWORD."§cPassword cannot contain spaces");
-                        return true;
-                    }
-                } else {
-                    $player->sendMessage(self::MSG_CHANGE_PASSWORD."§b/changepass (old-password) (new-password)");
-                    return true;
-                }
-            } else {
-                $player->sendMessage(self::MSG_CHANGE_PASSWORD."§cPlease use this command in-game");
-                return true;
-            }
-            break;
-            case "rmpass":
-            if($player instanceof Player){
-                if($player->isOp()){
-                    if(isset($args[0])){
-                        $target = $this->getServer()->getPlayer($args[0]);
-                        if($target instanceof Player){
-                            if(!isset($this->timer_remove_password[$player->getName()])){
-                                $this->onRemovepass($target);
-                                $player->sendMessage(self::MSG_REMOVE_PASSWORD."§aSuccess remove password §d".$target->getName());
+                if($player instanceof Player){
+                    if(isset($args[0]) && isset($args[1])){
+                        if(!isset($args[2])){
+                            if($args[1] == $args[0]){
+                                $this->onRegister($player, $args[0], $args[1]);
                                 return true;
                             } else {
-                                if(time() < $this->timer_remove_password[$player->getName()]){
-                                    $cooldown = $this->timer_remove_password[$player->getName()] - time();
-                                    $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cCooldown for use this command again: §d".$cooldown." §aSeconds");
-                                    return true;
-                                } else {
-                                    unset($this->timer_remove_password[$player->getName()]);
-                                    return true;
-                                }
+                                $player->sendMessage(self::MSG_REGISTER."§cPassword must be the same");
+                                return true;
                             }
                         } else {
-                            $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cPlayer §d".$args[0]."§c not found");
+                            $player->sendMessage(self::MSG_REGISTER."§cPassword cannot contain spaces");
                             return true;
                         }
                     } else {
-                        $player->sendMessage(self::MSG_REMOVE_PASSWORD."§b/rmpass (name-player)");
+                        $player->sendMessage(self::MSG_REGISTER."§b/register (password) (repeat-password)");
                         return true;
                     }
                 } else {
-                    $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cYou don't have permission");
+                    $player->sendMessage(self::MSG_REGISTER."§cUse This Command in-game");
                     return true;
                 }
-            } else {
-                $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cPlease Use This Command in-game");
-                return true;
-            }
+            break;
+            case "changepass":
+                if($player instanceof Player){
+                    if(isset($args[0]) && isset($args[1])){
+                        if(!isset($args[2])){
+                            if($args[1] != $args[0]){
+                                $this->onChangepass($player, $args[0], $args[1]);
+                                return true;
+                            } else {
+                                $player->sendMessage(self::MSG_CHANGE_PASSWORD."§cYou password don't can same, §drepeat again");
+                                return true;
+                            }
+                        } else {
+                            $player->sendMessage(self::MSG_CHANGE_PASSWORD."§cPassword cannot contain spaces");
+                            return true;
+                        }
+                    } else {
+                        $player->sendMessage(self::MSG_CHANGE_PASSWORD."§b/changepass (old-password) (new-password)");
+                        return true;
+                    }
+                } else {
+                    $player->sendMessage(self::MSG_CHANGE_PASSWORD."§cPlease use this command in-game");
+                    return true;
+                }
+            break;
+            case "rmpass":
+                if($player instanceof Player){
+                    if($player->isOp()){
+                        if(isset($args[0])){
+                            $target = $this->getServer()->getPlayer($args[0]);
+                            if($target instanceof Player){
+                                if(!isset($this->timer_remove_password[$player->getName()])){
+                                    $this->onRemovepass($target);
+                                    $player->sendMessage(self::MSG_REMOVE_PASSWORD."§aSuccess remove password §d".$target->getName());
+                                    return true;
+                                } else {
+                                    if(time() < $this->timer_remove_password[$player->getName()]){
+                                        $cooldown = $this->timer_remove_password[$player->getName()] - time();
+                                        $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cCooldown for use this command again: §d".$cooldown." §aSeconds");
+                                        return true;
+                                    } else {
+                                        unset($this->timer_remove_password[$player->getName()]);
+                                        return true;
+                                    }
+                                }
+                            } else {
+                                $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cPlayer §d".$args[0]."§c not found");
+                                return true;
+                            }
+                        } else {
+                            $player->sendMessage(self::MSG_REMOVE_PASSWORD."§b/rmpass (name-player)");
+                            return true;
+                        }
+                    } else {
+                        $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cYou don't have permission");
+                        return true;
+                    }
+                } else {
+                    $player->sendMessage(self::MSG_REMOVE_PASSWORD."§cPlease Use This Command in-game");
+                    return true;
+                }
             break;
             case "mypass":
-            if($player instanceof Player){
-                $this->onMypass($player);
-                return true;
-            } else {
-                $player->sendMessage(self::MSG_MY_PASSWORD."§cPlease Use This Command in-game");
-                return true;
-            }
+                if($player instanceof Player){
+                    $this->onMypass($player);
+                    return true;
+                } else {
+                    $player->sendMessage(self::MSG_MY_PASSWORD."§cPlease Use This Command in-game");
+                    return true;
+                }
             break;
             case "forgotpass":
                 if($player instanceof Player){
