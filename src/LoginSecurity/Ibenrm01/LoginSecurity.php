@@ -373,7 +373,7 @@ class LoginSecurity extends PluginBase implements Listener {
     }
 
     /**
-     * @param CommandSender $sender
+     * @param CommandSender $player
      * @param Command $cmd
      * @param string $label
      * @param array $args
